@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Countdown Animation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(90deg, #00254d, #004080);
+            color: white;
+            font-weight: 400;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+        }
+
+        canvas {
+            width: 100%;
+            height: 350px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+
+        section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        section h2 {
+            font-family: 'Merriweather', serif;
+            font-size: 1.75rem;
+            color: #00254d;
+            margin-bottom: 15px;
+        }
+
+        form .form-control {
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s;
+        }
+
+        form .form-control:focus {
+            border-color: #004080;
+            box-shadow: 0 0 4px rgba(0, 64, 128, 0.2);
+        }
+
+        button.btn-primary {
+            background-color: #004080;
+            border: none;
+            padding: 0.5rem 2rem;
+            font-weight: 400;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button.btn-primary:hover {
+            background-color: #0059b3;
+            box-shadow: 0 4px 10px rgba(0, 89, 179, 0.3);
+        }
+
+        .progress-container {
+            height: 12px;
+            background-color: #dee2e6;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: linear-gradient(90deg, #004080, #0059b3);
+            transition: width 0.3s ease;
+        }
+
+        .btn-secondary {
+            border-radius: 5px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0066cc;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-danger {
+            border-radius: 5px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #cc0000;
+            box-shadow: 0 4px 10px rgba(204, 0, 0, 0.3);
+        }
+
+        #mute-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        #mute-icon:hover {
+            color: #004080;
+            transform: scale(1.2);
+        }
+
+        footer {
+            background-color: #00254d;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 300;
+            padding: 10px 0;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        footer i.fa-heart {
+            color: #e63946;
+        }
+
+        #loading-indicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #004080;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        #speed-control {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="text-center py-4">
+        <h1>Dynamic Date Countdown</h1>
+        <p>Watch the days count backward while dates progress forward!</p>
+    </header>
+
+    <main class="container my-5">
+        <section class="mb-4">
+            <h2>Select Your Date Range</h2>
+            <form id="date-form" class="row g-3">
+                <div class="col-md-6">
+                    <label for="start-date" class="form-label">Start Date</label>
+                    <input type="date" id="start-date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="end-date" class="form-label">End Date</label>
+                    <input type="date" id="end-date" class="form-control" required>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary">Generate Animation</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="animation-section" class="text-center">
+            <h2>Animation Preview</h2>
+            <canvas id="animation-canvas"></canvas>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div id="speed-control">
+                <label for="animation-speed">Animation Speed:</label>
+                <select id="animation-speed">
+                    <option value="0.25">0.25x</option>
+                    <option value="0.33">0.33x</option>
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center mt-2">
+                <button id="pause-resume-btn" class="btn btn-secondary mx-2" title="Pause/Resume">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <button id="reset-btn" class="btn btn-danger" title="Reset">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <i id="mute-icon" class="fas fa-volume-up mute-icon mx-2" title="Mute/Unmute"></i>
+            </div>
+            <audio id="countingSound" preload="auto"></audio>
+        </section>
+
+        <section id="download-section" class="d-none text-center my-4">
+            <h2>Download Your Animation</h2>
+            <button id="download-btn" class="btn btn-success">
+                <i class="fa fa-download"></i> Download GIF
+            </button>
+        </section>
+        <div id="loading-indicator"></div>
+    </main>
+
+    <footer class="text-center">
+        <p>© 2024 by S. A. M. | Built with <i class="fa fa-heart"></i></p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateForm = document.getElementById('date-form');
+            const canvas = document.getElementById('animation-canvas');
+            const progressBar = document.getElementById('progress-bar');
+            const downloadSection = document.getElementById('download-section');
+            const downloadBtn = document.getElementById('download-btn');
+            const ctx = canvas.getContext('2d');
+            let animationFrame;
+            let gif;
+            let isPaused = false;
+            const countingSound = document.getElementById('countingSound');
+            let soundLoaded = false;
+            const soundUrl = "https://res.cloudinary.com/dmttn34te/video/upload/v1731769570/time-swoosh-77575_xsm90i.mp3"; // Replace with your sound URL or remove if not using sound
+            const muteIcon = document.getElementById('mute-icon');
+            let isMuted = false;
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const speedControl = document.getElementById('animation-speed');
+            let animationSpeed = 1;
+            let currentDay = 0;
+
+
+            const getOneYearAgo = () => {
+                const today = new Date();
+                today.setFullYear(today.getFullYear() - 1);
+                return today.toISOString().slice(0, 10);
+            };
+
+            document.getElementById('start-date').value = getOneYearAgo();
+            document.getElementById('end-date').value = new Date().toISOString().slice(0, 10);
+
+            countingSound.src = soundUrl;
+            countingSound.addEventListener('loadeddata', () => soundLoaded = true);
+            countingSound.addEventListener('error', (error) => {
+                console.error("Error loading sound:", error);
+                alert("Could not load sound effect.");
+            });
+
+            const animateDate = (startDate, endDate) => {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
+                currentDay = 0;
+
+                gif = new GIF({
+                    workers: 2,
+                    quality: 10
+                });
+
+                const draw = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    gradient.addColorStop(0, `hsl(${(currentDay / totalDays) * 360}, 100%, 50%)`);
+                    gradient.addColorStop(1, `hsl(${(1 - currentDay / totalDays) * 360}, 100%, 50%)`);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    const forwardDate = new Date(start.getTime() + currentDay * 24 * 60 * 60 * 1000).toDateString();
+                    const backwardDays = Math.floor(totalDays - currentDay);
+
+                    ctx.font = '30px Roboto';
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+
+                    ctx.fillText(`${forwardDate}`, canvas.width / 2, canvas.height / 2 - 20);
+                    ctx.fillText(`${backwardDays} Days Left`, canvas.width / 2, canvas.height / 2 + 40);
+
+                    progressBar.style.width = `${(currentDay / totalDays) * 100}%`;
+
+                    if (currentDay < totalDays && !isPaused && soundLoaded && !isMuted) {
+                        countingSound.play().catch(error => console.error("Error playing sound:", error));
+
+                        currentDay += animationSpeed;
+                        currentDay = Math.min(currentDay, totalDays);
+
+                        animationFrame = requestAnimationFrame(draw);
+                        gif.addFrame(canvas, {
+                            copy: true,
+                            delay: 100
+                        });
+
+                    } else if (currentDay >= totalDays) {
+                        countingSound.pause();
+                        countingSound.currentTime = 0;
+                        pauseResumeBtn.classList.remove("btn-success");
+                        pauseResumeBtn.classList.add("btn-secondary");
+                        pauseResumeBtn.children[0].classList.remove("fa-play");
+                        pauseResumeBtn.children[0].classList.add("fa-pause");
+                        pauseResumeBtn.title = "Pause/Resume";
+                    }
+                };
+
+                draw();
+            };
+
+            dateForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+
+                if (new Date(startDate) >= new Date(endDate)) {
+                    alert('Start date must be before the end date!');
+                    return;
+                }
+
+                cancelAnimationFrame(animationFrame);
+                animateDate(startDate, endDate);
+                downloadSection.classList.remove('d-none');
+            });
+
+            muteIcon.addEventListener('click', () => {
+                isMuted = !isMuted;
+                if (isMuted) {
+                    muteIcon.classList.remove('fa-volume-up');
+                    muteIcon.classList.add('fa-volume-mute');
+                    countingSound.muted = true;
+                    muteIcon.title = "Unmute";
+                } else {
+                    muteIcon.classList.remove('fa-volume-mute');
+                    muteIcon.classList.add('fa-volume-up');
+                    countingSound.muted = false;
+                    muteIcon.title = "Mute";
+                }
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                loadingIndicator.style.display = 'block';
+
+                gif.on('finished', (blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'date-animation.gif';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        loadingIndicator.style.display = 'none';
+                    }, 1000);
+                    URL.revokeObjectURL(url);
+                });
+                gif.render();
+                gif.on('error', (err) => {
+                    console.error("GIF generation failed:", err);
+                    alert("There was an error generating the GIF. Please try again.");
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+
+            speedControl.addEventListener('change', () => {
+                animationSpeed = parseFloat(speedControl.value);
+                cancelAnimationFrame(animationFrame);
+                currentDay = 0;
+                progressBar.style.width = "0%";
+                animateDate(document.getElementById('start-date').value, document.getElementById('end-date').value);
+            });
+        });
+    </script>
+</body>
+
+</html>
