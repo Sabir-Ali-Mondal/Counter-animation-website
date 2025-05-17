@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Problems Counter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #282c34, #3a3f4b);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 200px 0;
+        }
+        .counter-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        .counter-box:hover {
+            transform: scale(1.05);
+        }
+        .count {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 10px 0;
+            transition: color 0.5s;
+        }
+        .sub-text {
+            font-size: 18px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        .academy-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            color: #ffcc00;
+        }
+        .restart-btn {
+            margin-top: 200px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #ffcc00;
+            color: #282c34;
+            transition: 0.3s;
+        }
+        .restart-btn:hover {
+            background: #e6b800;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="counter-box">
+        <div class="count" id="counter">0</div>
+        <div class="sub-text">Python Coding Problems Solved</div>
+        <div class="academy-text">NxtWave 4.0 Academy</div>
+    </div>
+
+    <button class="restart-btn" onclick="restartCounter()">Restart Animation</button>
+
+    <script>
+        let interval;
+        
+        function animateCounter(target, elementId, speed) {
+            let count = 0;
+            clearInterval(interval);
+            interval = setInterval(() => {
+                document.getElementById(elementId).textContent = count;
+                if (count >= target) {
+                    clearInterval(interval);
+                    document.getElementById(elementId).textContent = target + "+";
+                }
+                count++;
+            }, speed);
+        }
+
+        function restartCounter() {
+            document.getElementById("counter").textContent = "0";
+            animateCounter(700, "counter", 10);
+        }
+
+        animateCounter(700, "counter", 10);
+    </script>
+
+</body>
+</html>
